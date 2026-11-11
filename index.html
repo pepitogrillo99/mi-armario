@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f5c52">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Armario">
+<title>Mi armario</title>
+<style>
+:root{--mq:#dfe3e0;--mqs:#bcc4c0;--bg:#eceeeb;--card:#fff;--tx:#1d2a2e;--mu:#68767a;--ac:#1f5c52;--on:#fff;--bd:#d5dad7;--warn:#b3392f;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--mq:#2c3738;--mqs:#43504f;--bg:#121819;--card:#1c2425;--tx:#e8eeeb;--mu:#93a1a3;--ac:#6fc2b0;--on:#10201c;--bd:#303b3c;--warn:#ef8a80;color-scheme:dark}}
+:root[data-theme="dark"]{--mq:#2c3738;--mqs:#43504f;--bg:#121819;--card:#1c2425;--tx:#e8eeeb;--mu:#93a1a3;--ac:#6fc2b0;--on:#10201c;--bd:#303b3c;--warn:#ef8a80;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 "Avenir Next","Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:14px 14px 110px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+h1{font:italic 600 26px Georgia,"Times New Roman",serif;margin:0}
+h3{margin:0 0 6px;font-size:16px}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--ac);color:var(--on);border:0;border-radius:10px;padding:10px 14px;font-weight:600}
+.btn.ghost{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+.btn.warn{background:var(--warn);color:#fff}
+.tabs{display:flex;gap:6px;margin-bottom:14px}
+.tab{flex:1;white-space:nowrap;background:var(--card);border:1px solid var(--bd);color:var(--tx);border-radius:10px;padding:9px 8px}
+.tab.on{background:var(--ac);color:var(--on);border-color:var(--ac)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.chip{background:var(--card);border:1px solid var(--bd);color:var(--tx);border-radius:999px;padding:5px 12px;font-size:14px}
+.chip.on{background:var(--ac);color:var(--on);border-color:var(--ac)}
+.sw{width:28px;height:28px;border-radius:50%;border:2px solid var(--bd);padding:0}
+.sw.on{outline:3px solid var(--ac);outline-offset:2px}
+.mu{color:var(--mu);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.card{position:relative;background:var(--card);border:2px solid var(--bd);border-radius:12px;overflow:hidden;cursor:pointer}
+.card.sel{border-color:var(--ac)}
+.card.sel::after{content:"✓";position:absolute;left:8px;top:8px;background:var(--ac);color:var(--on);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:700}
+.card img{width:100%;aspect-ratio:3/4;object-fit:contain;display:block;background:#fff}
+.meta{padding:8px 10px;display:flex;flex-direction:column;font-size:14px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;border:1px solid var(--bd);margin-right:5px}
+.mini{position:absolute;top:8px;min-width:30px;height:30px;border-radius:15px;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:0 8px;font-size:14px}
+.mini.r1{right:8px}.mini.r2{right:44px}
+.mini.warn{background:var(--warn);color:#fff;border-color:var(--warn)}
+.board{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:14px}
+.board figure{position:relative;margin:0;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:8px}
+.board img{width:100%;aspect-ratio:3/4;object-fit:contain;background:#fff;border-radius:8px;display:block}
+.board figcaption{font-size:13px;text-align:center;margin-top:6px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row input{flex:1;min-width:160px}
+input[type=text],input[type=password],select{width:100%;padding:10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit}
+.lk{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.lc{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px}
+.th{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0 10px}
+.th img{width:52px;height:64px;object-fit:contain;background:#fff;border-radius:6px;border:1px solid var(--bd)}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.cmp>div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px}
+.stack{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:6px}
+.stack img{width:100%;aspect-ratio:3/4;object-fit:contain;background:#fff;border-radius:6px}
+.empty{text-align:center;color:var(--mu);padding:40px 10px}
+.note{background:var(--card);border:1px solid var(--warn);color:var(--warn);border-radius:10px;padding:10px;margin-bottom:12px;font-size:14px}
+.foot{text-align:center;margin-top:24px}
+.lc label{display:block;margin:10px 0 4px}
+.bk{margin-bottom:14px}
+.bk p{margin:8px 0}
+.note.soft{border-color:var(--bd);color:var(--tx);display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+#bar{position:fixed;left:0;right:0;bottom:0;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--bd);display:flex;gap:8px;justify-content:center;z-index:5}
+#bar:empty{display:none}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px;z-index:20}
+.dlg{background:var(--card);border-radius:14px;padding:18px;width:100%;max-width:420px;max-height:100%;overflow:auto}
+.dlg label{display:block;font-size:14px;color:var(--mu);margin:12px 0 4px}
+.dlg .row{margin-top:16px;justify-content:flex-end}
+.prev{width:90px;border-radius:8px;background:#fff;margin-top:6px}
+#err{color:var(--warn);font-size:14px;min-height:18px;margin-top:8px}
+.pb{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.stg{flex:0 0 min(340px,100%);margin:0 auto}
+.ctl{flex:1;min-width:240px;display:flex;flex-direction:column;gap:12px}
+.plist{display:flex;gap:12px;flex-wrap:wrap}
+.pc{position:relative}
+.pc>button:first-child{border:2px solid var(--bd);background:#fff;border-radius:8px;padding:2px}
+.pc.on>button:first-child{border-color:var(--ac)}
+.pc img{width:44px;height:56px;object-fit:contain;display:block}
+.pc .x{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:11px;padding:0}
+.stage{position:relative;width:100%;max-width:340px;aspect-ratio:1/2;margin:0 auto;background:var(--card);border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+.mq{position:absolute;inset:0;width:100%;height:100%}
+.g{position:absolute;transform:translate(-50%,-50%);height:auto;max-width:none;pointer-events:none;user-select:none;-webkit-user-drag:none}
+#stage .g{pointer-events:auto;cursor:grab;touch-action:none}
+#stage .g.cur{outline:2px dashed var(--ac);outline-offset:2px}
+.ctl input[type=range],.dlg input[type=range]{width:100%}
+.dlg .chk{display:flex;gap:8px;align-items:center;margin:14px 0 4px;color:var(--tx)}
+.pv{background:repeating-conic-gradient(#bbb 0 25%,#eee 0 50%) 0 0/16px 16px;border-radius:8px;display:flex;justify-content:center;margin-top:8px}
+.pv:empty{display:none}
+.pv img{max-height:220px;max-width:100%}
+@media (max-width:520px){.cmp{gap:8px}}
+</style>
+</head>
+<body>
+<main>
+<header><h1>Mi armario</h1><div class="row" id="hdr"><button class="btn ghost" data-a="bk">Copia</button><button class="btn ghost" data-a="salir">Salir</button><button class="btn" data-a="add">+ Añadir prenda</button></div></header>
+<div id="warn"></div>
+<div id="bk"></div>
+<div class="tabs" id="tabs"></div>
+<div id="view"></div>
+<p class="mu foot">Tus prendas se guardan en tu cuenta, no solo en este dispositivo.</p>
+</main>
+<div id="bar"></div>
+<div id="modal"></div>
+<div id="ed"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const TIPOS=["Chaqueta/Abrigo","Camisa","Camiseta","Jersey","Vestido/Falda","Pantalón","Calzado","Complemento"];
+const TEMPS=["Primavera","Verano","Otoño","Invierno","Todo el año"],OCAS=["Diario","Trabajo","Elegante","Deporte","Fiesta","Casa"];
+const COL={Negro:"#1a1a1a",Blanco:"#ffffff",Gris:"#9a9a9a",Beige:"#d8c3a5",Marrón:"#7b4f2e",Azul:"#2f5fa7",Verde:"#3f7d4e",Rojo:"#c0392b",Rosa:"#e8a0b4",Amarillo:"#e8c547",Naranja:"#e07b39",Morado:"#7d4fa0",Multicolor:"conic-gradient(#c0392b,#e8c547,#3f7d4e,#2f5fa7,#7d4fa0,#c0392b)"};
+const S={tab:"armario",ft:null,fc:null,sel:new Set(),cmp:[],del:null,prendas:[],looks:[],modal:null,last:{tipo:TIPOS[2],color:"Negro",rm:true,tol:45,soft:true},warn:false,pos:{},cur:null,lname:"",pimg:null,bk:false,imp:null,rep:false,msg:"",user:null,err:"",fs:null,fo:null,edit:null,chpw:false,ed:null};
+const $=s=>document.querySelector(s);
+const esc=t=>String(t||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const rank=p=>TIPOS.indexOf(p.tipo);
+const byId=id=>S.prendas.find(p=>p.id===id);
+
+/* ---------- almacenamiento ---------- */
+const SB_URL="https://hyxeipntqmdwyqgcnexs.supabase.co",SB_KEY="sb_publishable_PnNh0O_PTfp0JmeqXlzGBg_5zQNDsHH",BK="fotos";
+const sb=window.supabase?window.supabase.createClient(SB_URL,SB_KEY):null;
+const errTxt=e=>{const m=String((e&&e.message)||e);return /invalid login/i.test(m)?"Correo o contraseña incorrectos.":/not confirmed/i.test(m)?"Falta confirmar el correo.":/already registered/i.test(m)?"Ese correo ya tiene cuenta. Pulsa Entrar.":/failed to fetch|network/i.test(m)?"Sin conexión con el servidor. Revisa internet.":/rate limit/i.test(m)?"Se han hecho demasiados registros seguidos. Espera un rato o pide que te creen la cuenta.":/signups not allowed/i.test(m)?"El registro está cerrado. Pide que te creen la cuenta.":/different from the old/i.test(m)?"La nueva contraseña debe ser distinta de la actual.":/password should be at least|weak/i.test(m)?"Contraseña demasiado débil. Usa al menos 8 caracteres, con letras y números.":m};
+const run=async f=>{S.err="";try{await f()}catch(e){S.err=errTxt(e)}};
+async function load(){
+ const [a,b]=await Promise.all([sb.from("prendas").select("*").order("created_at"),sb.from("looks").select("*").order("created_at",{ascending:false})]);
+ if(a.error)throw a.error;if(b.error)throw b.error;
+ const urls={};
+ if(a.data.length){const r=await sb.storage.from(BK).createSignedUrls(a.data.map(p=>p.foto_path),3600);if(r.error)throw r.error;r.data.forEach(x=>{if(x.signedUrl)urls[x.path]=x.signedUrl})}
+ S.prendas=a.data.map(p=>({id:p.id,tipo:p.tipo,color:p.color,nombre:p.nombre,path:p.foto_path,foto:urls[p.foto_path]||"",fecha:Date.parse(p.created_at),temp:p.temporada||[],oca:p.ocasion||[]}));
+ S.looks=b.data.map(l=>({id:l.id,nombre:l.nombre,ids:l.prenda_ids||[],pos:l.pos||{},fecha:Date.parse(l.created_at)}));
+ S.loadedAt=Date.now();
+}
+async function subir(blob,ext){
+ const path=S.user.id+"/"+Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
+ const {error}=await sb.storage.from(BK).upload(path,blob,{contentType:blob.type||(ext==="png"?"image/png":"image/jpeg")});
+ if(error)throw error;return path;
+}
+async function borrarPrenda(id){await run(async()=>{const p=byId(id);const {error}=await sb.from("prendas").delete().eq("id",id);if(error)throw error;if(p)await sb.storage.from(BK).remove([p.path]);await load()})}
+async function borrarLook(id){await run(async()=>{const {error}=await sb.from("looks").delete().eq("id",id);if(error)throw error;await load()})}
+async function guardarLook(nombre,ids,pos){await run(async()=>{const {error}=await sb.from("looks").insert({nombre,prenda_ids:ids,pos});if(error)throw error;await load()})}
+/* ---------- acceso ---------- */
+function vLogin(){return `<div class="lc" style="max-width:380px;margin:30px auto"><h3>Entra en tu armario</h3><label class="mu" for="lem">Correo</label><input type="text" id="lem" autocomplete="email" inputmode="email"><label class="mu" for="lpw">Contraseña (mínimo 6 caracteres)</label><input type="password" id="lpw" autocomplete="current-password"><div class="row" style="margin-top:14px"><button class="btn" data-a="login">Entrar</button></div><p class="mu">¿No tienes cuenta? Pídesela a quien administra el armario.</p>${S.msg?`<p class="mu">${esc(S.msg)}</p>`:""}</div>`}
+function renderLogin(){
+ ["#tabs","#bar","#modal","#bk"].forEach(k=>$(k).innerHTML="");
+ $("#hdr").style.display="none";
+ $("#warn").innerHTML=S.err?`<div class="note">${esc(S.err)}</div>`:"";
+ $("#view").innerHTML=vLogin();
+}
+async function entrar(a){
+ const email=$("#lem").value.trim(),password=$("#lpw").value;S.msg="";
+ if(!email||password.length<6){S.msg="Escribe tu correo y una contraseña de al menos 6 caracteres.";return}
+ try{
+  const r=a==="login"?await sb.auth.signInWithPassword({email,password}):await sb.auth.signUp({email,password});
+  if(r.error)throw r.error;
+  if(r.data.session){S.user=r.data.session.user;await run(load)}
+  else S.msg="Cuenta creada. Revisa tu correo para confirmarla y después pulsa Entrar.";
+ }catch(e){S.msg=errTxt(e)}
+}
+async function salir(){try{await sb.auth.signOut()}catch(e){}S.user=null;S.prendas=[];S.looks=[];S.sel.clear();S.cmp=[];S.pos={};S.cur=null;S.bk=false;S.msg="";S.err=""}
+
+function loadImg(file){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error("img"));i.src=URL.createObjectURL(file)})}
+/* Quita el fondo liso: rellena desde los bordes los píxeles parecidos al color del fondo y recorta la prenda */
+function cutRaw(i,max,tol,soft,remove){
+ const k=Math.min(1,max/Math.max(i.width,i.height)),w=Math.round(i.width*k),h=Math.round(i.height*k),n=w*h;
+ const c=document.createElement("canvas");c.width=w;c.height=h;const x=c.getContext("2d",{willReadFrequently:true});
+ x.drawImage(i,0,0,w,h);
+ const im=x.getImageData(0,0,w,h),d=im.data,o=new Uint8ClampedArray(d);
+ if(remove&&!(d[3]<250||d[(w-1)*4+3]<250||d[(n-w)*4+3]<250)){
+  const R=[],G=[],B=[],add=p=>{R.push(d[p*4]);G.push(d[p*4+1]);B.push(d[p*4+2])};
+  for(let a=0;a<w;a++){add(a);add(n-w+a)}for(let b=1;b<h-1;b++){add(b*w);add(b*w+w-1)}
+  const med=a=>a.sort((p,q)=>p-q)[a.length>>1],br=med(R),bg=med(G),bb=med(B);
+  const dist=p=>{const q=p*4,a=d[q]-br,b=d[q+1]-bg,e=d[q+2]-bb;return Math.sqrt(a*a+b*b+e*e)};
+  const dc=(p,q)=>{const a=d[p*4]-d[q*4],b=d[p*4+1]-d[q*4+1],e=d[p*4+2]-d[q*4+2];return Math.sqrt(a*a+b*b+e*e)};
+  const f=new Uint8Array(n),st=new Int32Array(n);let sp=0;
+  const push=(p,q)=>{if(f[p])return;const g=dist(p);if(g<=tol||(soft&&q>=0&&g<=tol*2&&dc(p,q)<=tol*.3)){f[p]=1;st[sp++]=p}};
+  for(let a=0;a<w;a++){push(a,-1);push(n-w+a,-1)}for(let b=0;b<h;b++){push(b*w,-1);push(b*w+w-1,-1)}
+  while(sp){const p=st[--sp],px=p%w;if(px>0)push(p-1,p);if(px<w-1)push(p+1,p);if(p>=w)push(p-w,p);if(p<n-w)push(p+w,p)}
+  for(let p=0;p<n;p++){
+   if(f[p]){d[p*4+3]=0;continue}
+   const px=p%w;
+   if((px>0&&f[p-1])||(px<w-1&&f[p+1])||(p>=w&&f[p-w])||(p<n-w&&f[p+w]))d[p*4+3]=Math.round(255*Math.max(0,Math.min(1,(dist(p)-tol)/(tol*.5+1))));
+  }
+ }
+ return {w,h,d,o};
+}
+function finish(w,h,d){
+ let x0=w,y0=h,x1=-1,y1=-1;
+ for(let p=0,n=w*h;p<n;p++)if(d[p*4+3]>20){const px=p%w,py=(p/w)|0;if(px<x0)x0=px;if(px>x1)x1=px;if(py<y0)y0=py;if(py>y1)y1=py}
+ if(x1<0)return null;
+ x0=Math.max(0,x0-2);y0=Math.max(0,y0-2);x1=Math.min(w-1,x1+2);y1=Math.min(h-1,y1+2);
+ const a=document.createElement("canvas");a.width=w;a.height=h;a.getContext("2d").putImageData(new ImageData(d,w,h),0,0);
+ const o=document.createElement("canvas");o.width=x1-x0+1;o.height=y1-y0+1;o.getContext("2d").drawImage(a,x0,y0,o.width,o.height,0,0,o.width,o.height);
+ return o;
+}
+function cut(i,max,tol,remove,soft){
+ if(!remove){
+  const k=Math.min(1,max/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);
+  const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(i,0,0,c.width,c.height);
+  return {c,jpg:true};
+ }
+ const r=cutRaw(i,max,tol,soft,true),c=finish(r.w,r.h,r.d);
+ return c?{c,jpg:false}:null;
+}
+const mismo=(a,b)=>a&&b&&a.name===b.name&&a.size===b.size&&a.lastModified===b.lastModified;
+const aBlob=(c,jpg)=>new Promise(res=>c.toBlob(res,jpg?"image/jpeg":"image/png",.85));
+async function foto(file,rm,tol,soft){
+ let r;
+ if(S.edit&&mismo(S.edit.file,file)){const c=finish(S.edit.w,S.edit.h,S.edit.d);if(!c)throw new Error("La imagen retocada se ha quedado vacía.");r={c,jpg:false}}
+ else{const i=await loadImg(file);r=cut(i,700,tol,rm,soft)||cut(i,700,tol,false)}
+ return {blob:await aBlob(r.c,r.jpg),ext:r.jpg?"jpg":"png"};
+}
+
+/* ---------- vistas ---------- */
+const chip=(k,v,l)=>`<button class="chip ${S[k]===v?"on":""}" data-a="${k}" data-v="${v||""}">${l}</button>`;
+const card=p=>`<div class="card ${S.sel.has(p.id)?"sel":""}" data-a="sel" data-v="${p.id}"><img src="${p.foto}" alt="${esc(p.nombre||p.tipo)}"><div class="meta"><b>${esc(p.nombre||p.tipo)}</b><span class="mu"><i class="dot" style="background:${COL[p.color]}"></i>${p.color}</span>${(p.temp.length||p.oca.length)?`<span class="mu">${[...p.temp,...p.oca].join(" · ")}</span>`:""}</div><button class="mini r2" data-a="edit" data-v="${p.id}" aria-label="Editar">✎</button><button class="mini r1 ${S.del==="p"+p.id?"warn":""}" data-a="del" data-v="${p.id}" aria-label="Borrar">${S.del==="p"+p.id?"¿Borrar?":"✕"}</button></div>`;
+
+function vArmario(){
+ const list=S.prendas.filter(p=>(!S.ft||p.tipo===S.ft)&&(!S.fc||p.color===S.fc)&&(!S.fs||p.temp.includes(S.fs)||p.temp.includes("Todo el año"))&&(!S.fo||p.oca.includes(S.fo)));
+ return `<div class="chips">${chip("ft",null,"Todo")}${TIPOS.map(t=>chip("ft",t,t)).join("")}</div>
+ <div class="chips"><span class="mu">Temporada</span>${chip("fs",null,"Todas")}${TEMPS.slice(0,4).map(t=>chip("fs",t,t)).join("")}</div>
+ <div class="chips"><span class="mu">Ocasión</span>${chip("fo",null,"Todas")}${OCAS.map(t=>chip("fo",t,t)).join("")}</div>
+ <div class="chips">${Object.keys(COL).map(c=>`<button class="sw ${S.fc===c?"on":""}" title="${c}" aria-label="${c}" style="background:${COL[c]}" data-a="fc" data-v="${c}"></button>`).join("")}${S.fc?`<span class="mu">${S.fc}</span>`:""}</div>
+ ${list.length?`<div class="grid">${list.map(card).join("")}</div>`:`<p class="empty">${S.prendas.length?"No hay prendas con ese filtro.":"Tu armario está vacío. Pulsa «Añadir prenda» y sube tus primeras fotos."}</p>`}`}
+const ZONE={"Chaqueta/Abrigo":{x:50,y:30,w:70,z:4},"Camisa":{x:50,y:28,w:58,z:3},"Camiseta":{x:50,y:28,w:58,z:3},"Jersey":{x:50,y:29,w:62,z:3},"Vestido/Falda":{x:50,y:52,w:56,z:2},"Pantalón":{x:50,y:66,w:42,z:2},"Calzado":{x:50,y:93,w:46,z:1},"Complemento":{x:82,y:48,w:22,z:5}};
+const geo=(p,pos)=>({...ZONE[p.tipo],...(pos[p.id]||{})});
+const MANN=`<svg class="mq" viewBox="0 0 300 600" aria-hidden="true"><g fill="var(--mq)" stroke="var(--mqs)" stroke-width="2"><ellipse cx="150" cy="48" rx="24" ry="30"/><rect x="139" y="74" width="22" height="28" rx="8"/><path d="M92 112Q150 96 208 112L214 150L206 262Q150 282 94 262L86 150Z"/><path d="M92 112L64 128L40 272L58 278L84 160Z"/><path d="M208 112L236 128L260 272L242 278L216 160Z"/><path d="M96 258L148 264L140 548L110 548Z"/><path d="M204 258L152 264L160 548L190 548Z"/><ellipse cx="124" cy="560" rx="24" ry="11"/><ellipse cx="176" cy="560" rx="24" ry="11"/></g></svg>`;
+function stage(ps,pos,live){return `<div class="stage" ${live?'id="stage"':''}>${MANN}${ps.map(p=>{const g=geo(p,pos);return `<img src="${p.foto}" alt="" class="g ${live&&S.cur===p.id?"cur":""}" ${live?`data-id="${p.id}"`:""} style="left:${g.x}%;top:${g.y}%;width:${g.w}%;z-index:${g.z}">`}).join("")}</div>`}
+function vProbador(){
+ const ps=[...S.sel].map(byId).filter(Boolean).sort((a,b)=>rank(a)-rank(b));
+ if(!ps.length)return `<p class="empty">Toca prendas en el Armario para ir montando un look y verlas puestas en el maniquí.</p>`;
+ const cur=S.cur&&S.sel.has(S.cur)?byId(S.cur):null;
+ return `<div class="pb"><div class="stg">${stage(ps,S.pos,true)}</div><div class="ctl">
+ <div class="mu">Arrastra una prenda para moverla. Toca una para cambiar su tamaño.</div>
+ <div class="plist">${ps.map(p=>`<span class="pc ${S.cur===p.id?"on":""}"><button data-a="cur" data-v="${p.id}" aria-label="Seleccionar"><img src="${p.foto}" alt=""></button><button class="x" data-a="sel" data-v="${p.id}" aria-label="Quitar">✕</button></span>`).join("")}</div>
+ ${cur?`<label class="mu" for="sz">Tamaño de «${esc(cur.nombre||cur.tipo)}»</label><input type="range" id="sz" min="15" max="120" value="${Math.round(geo(cur,S.pos).w)}">`:""}
+ <div class="row"><input type="text" id="lname" placeholder="Nombre del look (ej. Oficina)" maxlength="40" value="${esc(S.lname)}"></div>
+ <div class="row"><button class="btn" data-a="savelook">Guardar look</button><button class="btn ghost" data-a="reset">Recolocar</button><button class="btn ghost" data-a="clear">Vaciar</button></div></div></div>`}
+
+const items=l=>l.ids.map(byId).filter(Boolean).sort((a,b)=>rank(a)-rank(b));
+function vLooks(){
+ if(!S.looks.length)return `<p class="empty">Aún no has guardado ningún look. Monta uno en el Probador y pulsa «Guardar look».</p>`;
+ const c=S.cmp.map(id=>S.looks.find(l=>l.id===id)).filter(Boolean);
+ const cmp=c.length===2?`<div class="cmp">${c.map(l=>`<div><h3>${esc(l.nombre)}</h3>${stage(items(l),l.pos||{},false)}</div>`).join("")}</div>`:`<p class="mu">Pulsa «Comparar» en dos looks para verlos uno al lado del otro.</p>`;
+ return cmp+`<div class="lk">${S.looks.map(l=>`<div class="lc"><h3>${esc(l.nombre)}</h3><div class="th">${items(l).map(p=>`<img src="${p.foto}" alt="">`).join("")}</div><div class="row"><button class="chip ${S.cmp.includes(l.id)?"on":""}" data-a="cmp" data-v="${l.id}">Comparar</button><button class="chip" data-a="loadlook" data-v="${l.id}">Abrir</button><button class="chip ${S.del==="l"+l.id?"on":""}" data-a="dell" data-v="${l.id}">${S.del==="l"+l.id?"¿Borrar?":"Borrar"}</button></div></div>`).join("")}</div>`}
+
+function vModal(){
+ const m=S.modal,p=m.id?byId(m.id):null,l=p||S.last;
+ return `<div class="ov" data-a="closem"><div class="dlg"><h3>${p?"Editar prenda":"Añadir prenda"}</h3>
+ <label for="ftipo">Tipo de prenda</label><select id="ftipo">${TIPOS.map(t=>`<option ${t===l.tipo?"selected":""}>${t}</option>`).join("")}</select>
+ <label for="fcolor">Color</label><select id="fcolor">${Object.keys(COL).map(c=>`<option ${c===l.color?"selected":""}>${c}</option>`).join("")}</select>
+ <label for="fnombre">Nombre (opcional)</label><input type="text" id="fnombre" maxlength="40" value="${p?esc(p.nombre):""}" placeholder="Ej. Vaqueros rectos">
+ <label>Temporada</label><div class="chips" id="ftemp">${TEMPS.map(t=>`<button type="button" class="chip ${(p?p.temp:[]).includes(t)?"on":""}" data-a="tg" data-v="${t}">${t}</button>`).join("")}</div>
+ <label>Ocasión</label><div class="chips" id="foca">${OCAS.map(t=>`<button type="button" class="chip ${(p?p.oca:[]).includes(t)?"on":""}" data-a="tg" data-v="${t}">${t}</button>`).join("")}</div>
+ <label for="ffile">${p?"Cambiar foto (opcional)":"Fotos (puedes elegir varias)"}</label><input type="file" id="ffile" accept="image/*" ${p?"":"multiple"}>
+ ${p?`<img class="prev" src="${p.foto}" alt="">`:""}
+ <label class="chk"><input type="checkbox" id="frm" ${S.last.rm?"checked":""}> Quitar el fondo automáticamente</label>
+ <div id="rmopts" style="${S.last.rm?"":"display:none"}"><div class="mu">Funciona mejor con la prenda sobre un fondo liso (sábana, suelo o pared lisa). Se aplica el mismo ajuste a todas las fotos que subas a la vez.</div><label for="ftol">Tolerancia del fondo</label><input type="range" id="ftol" min="10" max="120" value="${S.last.tol}"><label class="chk"><input type="checkbox" id="fsh" ${S.last.soft?"checked":""}> Quitar también sombras suaves</label><div class="pv" id="pv"></div></div>
+ <div class="row" style="justify-content:flex-start;margin-top:10px;align-items:center"><button type="button" class="chip" data-a="retocar">Retocar recorte</button><span class="mu" id="edst"></span></div>
+ <div id="err"></div>
+ <div class="row"><button class="btn ghost" data-a="closem">Cancelar</button><button class="btn" data-a="guardar" id="gbtn">Guardar</button></div></div></div>`}
+
+function render(){
+ if(!S.user){renderLogin();return}
+ if(S.chpw||needPw()){renderPw();return}
+ $("#hdr").style.display="";
+ $("#warn").innerHTML=S.err?`<div class="note">${esc(S.err)}</div>`:"";
+ $("#tabs").innerHTML=[["armario","Armario"],["probador","Probador"+(S.sel.size?" ("+S.sel.size+")":"")],["looks","Mis looks"]].map(([k,l])=>`<button class="tab ${S.tab===k?"on":""}" data-a="tab" data-v="${k}">${l}</button>`).join("");
+ $("#view").innerHTML=S.tab==="armario"?vArmario():S.tab==="probador"?vProbador():vLooks();
+ $("#bar").innerHTML=(S.tab==="armario"&&S.sel.size)?`<button class="btn" data-a="tab" data-v="probador">Ver look (${S.sel.size})</button><button class="btn ghost" data-a="clear">Vaciar</button>`:"";
+ $("#modal").innerHTML=S.modal?vModal():"";
+ $("#bk").innerHTML=vBk();
+}
+
+async function guardar(){
+ const tipo=$("#ftipo").value,color=$("#fcolor").value,nombre=$("#fnombre").value.trim(),files=[...$("#ffile").files],rm=$("#frm").checked,tol=+$("#ftol").value,soft=$("#fsh").checked,m=S.modal;
+ const sel=q=>[...document.querySelectorAll(q+" .chip.on")].map(b=>b.dataset.v),temporada=sel("#ftemp"),ocasion=sel("#foca");
+ if(!m.id&&!files.length){$("#err").textContent="Elige al menos una foto.";return}
+ const bt=$("#gbtn");bt.disabled=true;bt.textContent="Guardando…";
+ try{
+  S.last={tipo,color,rm,tol,soft};
+  if(m.id){
+   const u={tipo,color,nombre,temporada,ocasion},old=byId(m.id).path;let nuevo=false;
+   if(files[0]){const f=await foto(files[0],rm,tol,soft);u.foto_path=await subir(f.blob,f.ext);nuevo=true}
+   else if(S.edit&&!S.edit.file){const c=finish(S.edit.w,S.edit.h,S.edit.d);if(!c)throw new Error("La imagen retocada se ha quedado vacía.");u.foto_path=await subir(await aBlob(c,false),"png");nuevo=true}
+   const r=await sb.from("prendas").update(u).eq("id",m.id);if(r.error)throw r.error;
+   if(nuevo)await sb.storage.from(BK).remove([old]);
+  }else for(let k=0;k<files.length;k++){
+   bt.textContent="Guardando "+(k+1)+"/"+files.length+"…";
+   const f=await foto(files[k],rm,tol,soft),path=await subir(f.blob,f.ext);
+   const r=await sb.from("prendas").insert({tipo,color,nombre:files.length===1?nombre:"",foto_path:path,temporada,ocasion});
+   if(r.error){await sb.storage.from(BK).remove([path]);throw r.error}
+  }
+  S.modal=null;S.edit=null;await load();render();
+ }catch(e){$("#err").textContent=errTxt(e);bt.textContent="Guardar";bt.disabled=false}
+}
+
+document.addEventListener("click",async e=>{
+ const el=e.target.closest("[data-a]");if(!el)return;
+ const a=el.dataset.a,v=el.dataset.v,id=Number(v);
+ if(a==="closem"&&e.target!==el)return;
+ if(a!=="del"&&a!=="dell")S.del=null;
+ if(a!=="impreplace")S.rep=false;
+ if(a==="guardar"){await guardar();return}
+ if(a==="tab")S.tab=v;
+ else if(a==="ft")S.ft=v||null;
+ else if(a==="fs")S.fs=v||null;
+ else if(a==="fo")S.fo=v||null;
+ else if(a==="fc")S.fc=S.fc===v?null:v;
+ else if(a==="sel"){if(S.sel.has(id)){S.sel.delete(id);if(S.cur===id)S.cur=null}else S.sel.add(id)}
+ else if(a==="cur")S.cur=id
+ else if(a==="reset"){S.pos={};S.cur=null}
+ else if(a==="bk"){S.bk=!S.bk;S.msg=""}
+ else if(a==="login"||a==="signup")await entrar(a)
+ else if(a==="salir")await salir()
+ else if(a==="pwsave")await cambiarPw()
+ else if(a==="pwopen"){S.chpw=true;S.msg="";S.bk=false}
+ else if(a==="pwcancel"){S.chpw=false;S.msg=""}
+ else if(a==="tg"){el.classList.toggle("on");return}
+ else if(a==="retocar"){await abrirEd();return}
+ else if(a==="tool"){S.ed.tool=v;$("#tb").classList.toggle("on",v==="borrar");const t=$("#tr");if(t)t.classList.toggle("on",v==="restaurar");return}
+ else if(a==="edundo"){edUndo();return}
+ else if(a==="edcancel"){S.ed=null;$("#ed").innerHTML="";return}
+ else if(a==="eddone"){const e=S.ed;S.edit={file:e.file,w:e.w,h:e.h,d:e.d};S.ed=null;$("#ed").innerHTML="";const t=$("#edst");if(t)t.textContent="✓ Retoque aplicado";return}
+ else if(a==="bkclose"){S.bk=false;S.imp=null;S.msg=""}
+ else if(a==="export")await exportar();
+ else if(a==="import"){$("#fimp").click();return}
+ else if(a==="impmerge")await aplicar("merge");
+  else if(a==="impcancel"){S.imp=null;S.msg=""}
+ else if(a==="clear"){S.sel.clear();S.pos={};S.cur=null}
+ else if(a==="add"){S.modal={};S.pimg=null;S.edit=null}
+ else if(a==="edit"){S.modal={id};S.pimg=null;S.edit=null}
+ else if(a==="closem")S.modal=null;
+ else if(a==="del"){if(S.del==="p"+id){S.del=null;S.sel.delete(id);await borrarPrenda(id)}else S.del="p"+id}
+ else if(a==="dell"){if(S.del==="l"+id){S.del=null;S.cmp=S.cmp.filter(x=>x!==id);await borrarLook(id)}else S.del="l"+id}
+ else if(a==="cmp"){S.cmp.includes(id)?S.cmp=S.cmp.filter(x=>x!==id):S.cmp.push(id);if(S.cmp.length>2)S.cmp.shift()}
+ else if(a==="loadlook"){const l=S.looks.find(x=>x.id===id);S.sel=new Set(l.ids.filter(byId));S.pos={...(l.pos||{})};S.cur=null;S.tab="probador"}
+ else if(a==="savelook"){const n=$("#lname").value.trim()||"Look "+(S.looks.length+1);const pos={};S.sel.forEach(i=>{if(S.pos[i])pos[i]=S.pos[i]});await guardarLook(n,[...S.sel],pos);S.lname="";S.tab="looks"}
+ render();
+});
+
+let drag=null,pt;
+function updatePrev(){clearTimeout(pt);pt=setTimeout(()=>{const pv=$("#pv"),f=$("#frm");if(!pv||!f)return;if(!f.checked||!S.pimg){pv.innerHTML="";return}const r=cut(S.pimg,260,+$("#ftol").value,true,$("#fsh").checked);pv.innerHTML=r?`<img src="${r.c.toDataURL("image/png")}" alt="Vista previa sin fondo">`:`<span class="mu" style="padding:10px">Con este valor desaparece toda la prenda. Baja la tolerancia.</span>`},120)}
+document.addEventListener("change",async e=>{
+ if(e.target.id==="ffile"){const f=e.target.files[0];S.pimg=null;S.edit=null;const st=$("#edst");if(st)st.textContent="";if(f){try{S.pimg=await loadImg(f)}catch(x){}}updatePrev()}
+ if(e.target.id==="frm"){$("#rmopts").style.display=e.target.checked?"":"none";updatePrev()}
+});
+document.addEventListener("input",e=>{
+ const id=e.target.id;
+ if(id==="ftol")updatePrev();
+ else if(id==="lname")S.lname=e.target.value;
+ else if(id==="sz"&&S.cur){S.pos[S.cur]={...(S.pos[S.cur]||{}),w:+e.target.value};const g=document.querySelector('#stage .g[data-id="'+S.cur+'"]');if(g)g.style.width=e.target.value+"%"}
+});
+document.addEventListener("pointerdown",e=>{const g=e.target.closest("#stage .g");if(!g)return;e.preventDefault();const id=+g.dataset.id,p=byId(id);if(!p)return;const o=geo(p,S.pos);S.cur=id;drag={g,id,r:$("#stage").getBoundingClientRect(),sx:e.clientX,sy:e.clientY,x:o.x,y:o.y};try{g.setPointerCapture(e.pointerId)}catch(x){}});
+document.addEventListener("pointermove",e=>{if(!drag)return;const x=Math.max(0,Math.min(100,drag.x+(e.clientX-drag.sx)/drag.r.width*100)),y=Math.max(0,Math.min(100,drag.y+(e.clientY-drag.sy)/drag.r.height*100));S.pos[drag.id]={...(S.pos[drag.id]||{}),x,y};drag.g.style.left=x+"%";drag.g.style.top=y+"%"});
+const endDrag=()=>{if(drag){drag=null;render()}};
+document.addEventListener("pointerup",endDrag);document.addEventListener("pointercancel",endDrag);
+
+/* ---------- copia de seguridad ---------- */
+const has=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+const RX=/^data:image\/(png|jpeg);base64,[A-Za-z0-9+\/=]+$/;
+const num=(v,a,b,d)=>typeof v==="number"&&isFinite(v)?Math.max(a,Math.min(b,v)):d;
+function lastBkTs(){try{return Number(localStorage.getItem("armario-bk"))||0}catch(e){return 0}}
+function vBk(){
+ if(!S.bk)return "";
+ const t=lastBkTs();
+ return `<div class="lc bk"><h3>Copia de seguridad</h3>
+ <p class="mu">Tus prendas ya se guardan en la nube, pero puedes descargar además una copia en un archivo. ${t?"Última copia: "+new Date(t).toLocaleDateString("es-ES")+".":"Aún no has hecho ninguna copia."}</p>
+ <p class="mu">Si tienes una copia hecha con la versión anterior (sin cuenta), impórtala para subirla a tu armario.</p>
+ <div class="row"><button class="btn" data-a="export">Exportar copia</button><button class="btn ghost" data-a="import">Importar copia antigua</button><button class="btn ghost" data-a="pwopen">Cambiar contraseña</button><button class="btn ghost" data-a="bkclose">Cerrar</button></div>
+ <input type="file" id="fimp" accept=".json,application/json" hidden>
+ ${S.imp?`<p><b>Esta copia tiene ${S.imp.p.length} prendas y ${S.imp.l.length} looks.</b></p><div class="row"><button class="btn" data-a="impmerge">Subir a mi armario</button><button class="btn ghost" data-a="impcancel">Cancelar</button></div>`:""}
+ ${S.msg?`<p class="mu" role="status">${esc(S.msg)}</p>`:""}</div>`}
+async function exportar(){await run(async()=>{
+ const pr=[];
+ for(let i=0;i<S.prendas.length;i++){
+  const p=S.prendas[i];S.msg="Preparando copia "+(i+1)+"/"+S.prendas.length+"…";$("#bk").innerHTML=vBk();
+  const b=await (await fetch(p.foto)).blob();
+  const d=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(b)});
+  pr.push({id:p.id,tipo:p.tipo,color:p.color,nombre:p.nombre,foto:d,fecha:p.fecha,temp:p.temp,oca:p.oca});
+ }
+ const d={app:"mi-armario",version:1,fecha:Date.now(),prendas:pr,looks:S.looks.map(l=>({nombre:l.nombre,ids:l.ids,pos:l.pos,fecha:l.fecha}))};
+ const u=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:"application/json"})),a=document.createElement("a");
+ a.href=u;a.download="mi-armario-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(u),5000);
+ try{localStorage.setItem("armario-bk",String(Date.now()))}catch(e){}
+ S.msg="Copia creada con "+pr.length+" prendas y "+d.looks.length+" looks. Mira en tu carpeta de Descargas.";
+})}
+function limpiaP(p){
+ if(!p||typeof p.foto!=="string"||!RX.test(p.foto))return null;
+ return {id:Number.isInteger(p.id)?p.id:null,tipo:TIPOS.includes(p.tipo)?p.tipo:"Complemento",color:typeof p.color==="string"&&has(COL,p.color)?p.color:"Multicolor",nombre:typeof p.nombre==="string"?p.nombre.slice(0,40):"",foto:p.foto,fecha:num(p.fecha,0,9e15,Date.now()),temp:Array.isArray(p.temp)?p.temp.filter(t=>TEMPS.includes(t)):[],oca:Array.isArray(p.oca)?p.oca.filter(t=>OCAS.includes(t)):[]};
+}
+function limpiaL(l){
+ if(!l||!Array.isArray(l.ids))return null;
+ const pos={};
+ if(l.pos&&typeof l.pos==="object")for(const k of Object.keys(l.pos)){const q=l.pos[k];if(q&&typeof q==="object"&&/^\d+$/.test(k)){const o={};["x","y","w"].forEach(c=>{if(typeof q[c]==="number"&&isFinite(q[c]))o[c]=num(q[c],0,150,50)});pos[k]=o}}
+ return {nombre:typeof l.nombre==="string"?l.nombre.slice(0,40):"Look",ids:l.ids.filter(Number.isInteger),pos,fecha:num(l.fecha,0,9e15,Date.now())};
+}
+async function leerCopia(file){
+ try{
+  const d=JSON.parse(await file.text());
+  if(!d||d.app!=="mi-armario"||!Array.isArray(d.prendas)||!Array.isArray(d.looks))throw new Error("x");
+  const p=d.prendas.map(limpiaP).filter(Boolean),l=d.looks.map(limpiaL).filter(Boolean);
+  S.imp=p.length?{p,l}:null;S.msg=p.length?"":"La copia no contiene prendas.";
+ }catch(e){S.imp=null;S.msg="Ese archivo no parece una copia de Mi armario."}
+ S.rep=false;render();
+}
+async function aplicar(){
+ const {p,l}=S.imp;
+ await run(async()=>{
+  const map={};
+  for(let i=0;i<p.length;i++){
+   const x=p[i];S.msg="Subiendo "+(i+1)+"/"+p.length+"…";$("#bk").innerHTML=vBk();
+   const h=x.foto.split(","),mime=h[0].slice(5,h[0].indexOf(";")),bin=atob(h[1]),u8=new Uint8Array(bin.length);
+   for(let k=0;k<bin.length;k++)u8[k]=bin.charCodeAt(k);
+   const path=await subir(new Blob([u8],{type:mime}),mime==="image/png"?"png":"jpg");
+   const r=await sb.from("prendas").insert({tipo:x.tipo,color:x.color,nombre:x.nombre,foto_path:path,temporada:x.temp||[],ocasion:x.oca||[]}).select("id").single();
+   if(r.error){await sb.storage.from(BK).remove([path]);throw r.error}
+   if(x.id!=null)map[x.id]=r.data.id;
+  }
+  let nl=0;
+  for(const x of l){
+   const ids=x.ids.map(i=>map[i]).filter(i=>i!=null),pos={};
+   Object.keys(x.pos).forEach(k=>{if(map[k]!=null)pos[map[k]]=x.pos[k]});
+   if(!ids.length)continue;
+   const r=await sb.from("looks").insert({nombre:x.nombre,prenda_ids:ids,pos});if(r.error)throw r.error;nl++;
+  }
+  S.msg="Importado: "+p.length+" prendas y "+nl+" looks.";await load();
+ });
+ S.imp=null;
+}
+document.addEventListener("change",async e=>{if(e.target.id==="fimp"){const f=e.target.files[0];if(f)await leerCopia(f)}});
+
+/* ---------- contraseña ---------- */
+const needPw=()=>!(S.user&&S.user.user_metadata&&S.user.user_metadata.pw_ok);
+function vPw(){
+ const forced=needPw();
+ return `<div class="lc" style="max-width:380px;margin:30px auto"><h3>${forced?"Elige tu contraseña":"Cambiar contraseña"}</h3>${forced?`<p class="mu">Es tu primer acceso: cambia la contraseña que te han dado por una tuya.</p>`:""}<label class="mu" for="pw1">Nueva contraseña (mínimo 8 caracteres)</label><input type="password" id="pw1" autocomplete="new-password"><label class="mu" for="pw2">Repítela</label><input type="password" id="pw2" autocomplete="new-password"><div class="row" style="margin-top:14px"><button class="btn" data-a="pwsave">Guardar</button>${forced?`<button class="btn ghost" data-a="salir">Salir</button>`:`<button class="btn ghost" data-a="pwcancel">Cancelar</button>`}</div>${S.msg?`<p class="mu">${esc(S.msg)}</p>`:""}</div>`}
+function renderPw(){
+ ["#tabs","#bar","#modal","#bk","#ed"].forEach(k=>$(k).innerHTML="");
+ $("#hdr").style.display="none";
+ $("#warn").innerHTML=S.err?`<div class="note">${esc(S.err)}</div>`:"";
+ $("#view").innerHTML=vPw();
+}
+async function cambiarPw(){
+ const a=$("#pw1").value,b=$("#pw2").value;S.msg="";
+ if(a.length<8){S.msg="La contraseña debe tener al menos 8 caracteres.";return}
+ if(a!==b){S.msg="Las dos contraseñas no coinciden.";return}
+ try{const r=await sb.auth.updateUser({password:a,data:{pw_ok:true}});if(r.error)throw r.error;S.user=r.data.user;S.chpw=false;S.msg="";await run(load)}
+ catch(e){S.msg=errTxt(e)}
+}
+/* ---------- editor de recorte ---------- */
+function vEd(){const e=S.ed;return `<div class="ov" style="z-index:30"><div class="dlg" style="max-width:580px"><h3>Retocar recorte</h3>
+ <div class="row" style="justify-content:flex-start;margin-top:6px"><button type="button" class="chip on" id="tb" data-a="tool" data-v="borrar">Borrar</button><button type="button" class="chip" id="tr" data-a="tool" data-v="restaurar">Restaurar</button><button type="button" class="chip" data-a="edundo">Deshacer</button></div>
+ <label for="bsz">Tamaño del pincel</label><input type="range" id="bsz" min="4" max="80" value="${e.r}">
+ <div class="pv" style="margin-top:10px"><canvas id="edc" width="${e.w}" height="${e.h}" style="touch-action:none;cursor:crosshair"></canvas></div>
+ <div class="row"><button type="button" class="btn ghost" data-a="edcancel">Cancelar</button><button type="button" class="btn" data-a="eddone">Listo</button></div></div></div>`}
+function edDraw(){$("#edc").getContext("2d").putImageData(new ImageData(S.ed.d,S.ed.w,S.ed.h),0,0)}
+function edSnap(){const e=S.ed,a=new Uint8Array(e.w*e.h);for(let i=0;i<a.length;i++)a[i]=e.d[i*4+3];e.hist.push(a);if(e.hist.length>15)e.hist.shift()}
+function edUndo(){const e=S.ed,a=e.hist.pop();if(!a)return;for(let i=0;i<a.length;i++)e.d[i*4+3]=a[i];edDraw()}
+function edBrush(x,y){
+ const e=S.ed,r=e.r,d=e.d,w=e.w,h=e.h,er=e.tool==="borrar",r2=r*r;
+ for(let yy=Math.max(0,Math.floor(y-r));yy<=Math.min(h-1,Math.ceil(y+r));yy++)for(let xx=Math.max(0,Math.floor(x-r));xx<=Math.min(w-1,Math.ceil(x+r));xx++){
+  const dx=xx-x,dy=yy-y;if(dx*dx+dy*dy<=r2){const i=(yy*w+xx)*4+3;d[i]=er?0:e.o[i]}
+ }
+}
+function edLine(x0,y0,x1,y1){const n=Math.max(1,Math.ceil(Math.hypot(x1-x0,y1-y0)/(S.ed.r/3)));for(let k=0;k<=n;k++)edBrush(x0+(x1-x0)*k/n,y0+(y1-y0)*k/n)}
+async function abrirEd(){
+ const m=S.modal;let w,h,d,o,file=null;
+ try{
+  if(S.pimg){const r=cutRaw(S.pimg,700,+$("#ftol").value,$("#fsh").checked,$("#frm").checked);w=r.w;h=r.h;d=r.d;o=r.o;file=$("#ffile").files[0]}
+  else if(m&&m.id){
+   const i=await new Promise((res,rej)=>{const im=new Image();im.crossOrigin="anonymous";im.onload=()=>res(im);im.onerror=()=>rej(new Error("No se ha podido cargar la foto."));im.src=byId(m.id).foto});
+   const c=document.createElement("canvas");c.width=i.width;c.height=i.height;const x=c.getContext("2d",{willReadFrequently:true});x.drawImage(i,0,0);
+   w=c.width;h=c.height;d=x.getImageData(0,0,w,h).data;o=new Uint8ClampedArray(d);
+  }else{$("#err").textContent="Elige primero una foto.";return}
+ }catch(e){$("#err").textContent=errTxt(e);return}
+ S.ed={w,h,d,o,r:20,tool:"borrar",hist:[],last:null,file};
+ $("#ed").innerHTML=vEd();
+ const c=$("#edc"),k=Math.min(1,Math.min(window.innerWidth-80,520)/w,window.innerHeight*.5/h);
+ c.style.width=Math.round(w*k)+"px";c.style.height=Math.round(h*k)+"px";edDraw();
+}
+const edPos=e=>{const r=$("#edc").getBoundingClientRect();return [(e.clientX-r.left)*S.ed.w/r.width,(e.clientY-r.top)*S.ed.h/r.height]};
+document.addEventListener("pointerdown",e=>{if(!S.ed||e.target.id!=="edc")return;e.preventDefault();edSnap();const p=edPos(e);S.ed.last=p;edLine(p[0],p[1],p[0],p[1]);edDraw();try{e.target.setPointerCapture(e.pointerId)}catch(x){}});
+document.addEventListener("pointermove",e=>{if(!S.ed||!S.ed.last)return;const p=edPos(e),l=S.ed.last;edLine(l[0],l[1],p[0],p[1]);S.ed.last=p;edDraw()});
+document.addEventListener("pointerup",()=>{if(S.ed)S.ed.last=null});
+document.addEventListener("input",e=>{if(e.target.id==="bsz"&&S.ed)S.ed.r=+e.target.value});
+document.addEventListener("change",e=>{if(e.target.id==="fsh")updatePrev()});
+document.addEventListener("keydown",e=>{if(e.key!=="Enter")return;const id=e.target.id,b=(id==="lpw"||id==="lem")?document.querySelector('[data-a="login"]'):(id==="pw1"||id==="pw2")?document.querySelector('[data-a="pwsave"]'):null;if(b)b.click()});
+
+document.addEventListener("visibilitychange",async()=>{if(document.visibilityState==="visible"&&S.user&&!S.modal&&Date.now()-S.loadedAt>50*60*1000){await run(load);render()}});
+(async()=>{
+ if(!sb){S.msg="No se ha podido cargar el servicio (Supabase). Revisa tu conexión a internet.";render();return}
+ await run(async()=>{const r=await sb.auth.getSession();if(r.data.session){S.user=r.data.session.user;await load()}});
+ render();
+})();
+</script>
+</body>
+</html>
