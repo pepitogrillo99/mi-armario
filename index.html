@@ -24,13 +24,13 @@ h1{font:italic 600 26px Georgia,"Times New Roman",serif;margin:0}
 h3{margin:0 0 6px;font-size:16px}
 button{font:inherit;cursor:pointer}
 .btn{background:var(--ac);color:var(--on);border:0;border-radius:10px;padding:10px 14px;font-weight:600}
-.btn.ghost{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+.btn.ghost{background:var(--sec,transparent);color:var(--sect,var(--tx));border:1px solid var(--bd)}
 .btn.warn{background:var(--warn);color:#fff}
 .tabs{display:flex;gap:6px;margin-bottom:14px}
-.tab{flex:1;white-space:nowrap;background:var(--card);border:1px solid var(--bd);color:var(--tx);border-radius:10px;padding:9px 8px}
+.tab{flex:1;white-space:nowrap;background:var(--sec,var(--card));border:1px solid var(--bd);color:var(--sect,var(--tx));border-radius:10px;padding:9px 8px}
 .tab.on{background:var(--ac);color:var(--on);border-color:var(--ac)}
 .chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-.chip{background:var(--card);border:1px solid var(--bd);color:var(--tx);border-radius:999px;padding:5px 12px;font-size:14px}
+.chip{background:var(--sec,var(--card));border:1px solid var(--bd);color:var(--sect,var(--tx));border-radius:999px;padding:5px 12px;font-size:14px}
 .chip.on{background:var(--ac);color:var(--on);border-color:var(--ac)}
 .sw{width:28px;height:28px;border-radius:50%;border:2px solid var(--bd);padding:0}
 .sw.on{outline:3px solid var(--ac);outline-offset:2px}
@@ -85,7 +85,7 @@ input[type=text],input[type=password],select{width:100%;padding:10px;border-radi
 .pc img{width:44px;height:56px;object-fit:contain;display:block}
 .pc .x{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:11px;padding:0}
 .stage{position:relative;width:100%;max-width:340px;aspect-ratio:1/2;margin:0 auto;background:var(--card);border:1px solid var(--bd);border-radius:14px;overflow:hidden}
-.mq{position:absolute;inset:0;width:100%;height:100%}
+.mq{position:absolute;inset:0;width:100%;height:100%;opacity:var(--mqo,.5)}
 .g{position:absolute;transform:translate(-50%,-50%);height:auto;max-width:none;pointer-events:none;user-select:none;-webkit-user-drag:none}
 #stage .g{pointer-events:auto;cursor:grab;touch-action:none}
 #stage .g.cur{outline:2px dashed var(--ac);outline-offset:2px}
@@ -94,27 +94,38 @@ input[type=text],input[type=password],select{width:100%;padding:10px;border-radi
 .pv{background:repeating-conic-gradient(#bbb 0 25%,#eee 0 50%) 0 0/16px 16px;border-radius:8px;display:flex;justify-content:center;margin-top:8px}
 .pv:empty{display:none}
 .pv img{max-height:220px;max-width:100%}
+.tryon{display:flex;flex-direction:column;gap:10px;flex:1 1 340px;max-width:560px}
+.tryon .stg{order:1;flex:none;width:100%;max-width:340px;margin:0 auto}
+.slots{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.slots.l{order:2}.slots.r{order:3}
+.slot{width:76px;border:2px dashed var(--bd);border-radius:10px;background:var(--card);color:var(--mu);padding:4px;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.slot.on{border-style:solid;border-color:var(--ac)}
+.slot img{width:100%;height:60px;object-fit:contain;background:#fff;border-radius:6px}
+.slot .plus{font-size:26px;line-height:60px;height:60px}
+.slot .sl{font-size:11px;margin-top:3px}
+@media (min-width:760px){.tryon{flex-direction:row;align-items:flex-start;flex:0 0 auto;max-width:none}.tryon .stg{order:2;width:340px}.slots{flex-direction:column;flex-wrap:nowrap;justify-content:flex-start}.slots.l{order:1}.slots.r{order:3}}
 @media (max-width:520px){.cmp{gap:8px}}
 </style>
 </head>
 <body>
 <main>
-<header><h1>Mi armario</h1><div class="row" id="hdr"><button class="btn ghost" data-a="bk">Copia</button><button class="btn ghost" data-a="salir">Salir</button><button class="btn" data-a="add">+ Añadir prenda</button></div></header>
+<header><h1>Mi armario</h1><div class="row" id="hdr"><button class="btn ghost" data-a="cfgopen">Ajustes</button><button class="btn ghost" data-a="bk">Copia</button><button class="btn ghost" data-a="salir">Salir</button><button class="btn" data-a="add">+ Añadir prenda</button></div></header>
 <div id="warn"></div>
 <div id="bk"></div>
 <div class="tabs" id="tabs"></div>
 <div id="view"></div>
-<p class="mu foot">Tus prendas se guardan en tu cuenta, no solo en este dispositivo.</p>
+<p class="mu foot">Tus prendas se guardan en tu cuenta. · Mi armario v2.3.0</p>
 </main>
 <div id="bar"></div>
 <div id="modal"></div>
 <div id="ed"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
-const TIPOS=["Chaqueta/Abrigo","Camisa","Camiseta","Jersey","Vestido/Falda","Pantalón","Calzado","Complemento"];
+const TIPOS=["Chaqueta/Abrigo","Camisa","Camiseta","Jersey","Vestido/Falda","Pantalón","Calzado","Gorra","Pañuelo","Bolso","Cinturón","Reloj","Complemento"];
+const SL_L=["Gorra","Pañuelo","Bolso"],SL_R=["Cinturón","Reloj","Complemento"],COMP=[...SL_L,...SL_R];
 const TEMPS=["Primavera","Verano","Otoño","Invierno","Todo el año"],OCAS=["Diario","Trabajo","Elegante","Deporte","Fiesta","Casa"];
 const COL={Negro:"#1a1a1a",Blanco:"#ffffff",Gris:"#9a9a9a",Beige:"#d8c3a5",Marrón:"#7b4f2e",Azul:"#2f5fa7",Verde:"#3f7d4e",Rojo:"#c0392b",Rosa:"#e8a0b4",Amarillo:"#e8c547",Naranja:"#e07b39",Morado:"#7d4fa0",Multicolor:"conic-gradient(#c0392b,#e8c547,#3f7d4e,#2f5fa7,#7d4fa0,#c0392b)"};
-const S={tab:"armario",ft:null,fc:null,sel:new Set(),cmp:[],del:null,prendas:[],looks:[],modal:null,last:{tipo:TIPOS[2],color:"Negro",rm:true,tol:45,soft:true},warn:false,pos:{},cur:null,lname:"",pimg:null,bk:false,imp:null,rep:false,msg:"",user:null,err:"",fs:null,fo:null,edit:null,chpw:false,ed:null};
+const S={tab:"armario",ft:null,fc:null,sel:new Set(),cmp:[],del:null,prendas:[],looks:[],modal:null,last:{tipo:TIPOS[2],color:"Negro",rm:true,tol:45,soft:true},warn:false,pos:{},cur:null,lname:"",pimg:null,bk:false,imp:null,rep:false,msg:"",user:null,err:"",fs:null,fo:null,edit:null,chpw:false,ed:null,cfg:{},cfgErr:false,cfgOpen:false,cfgLoaded:false,pickT:null};
 const $=s=>document.querySelector(s);
 const esc=t=>String(t||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const rank=p=>TIPOS.indexOf(p.tipo);
@@ -132,6 +143,7 @@ async function load(){
  if(a.data.length){const r=await sb.storage.from(BK).createSignedUrls(a.data.map(p=>p.foto_path),3600);if(r.error)throw r.error;r.data.forEach(x=>{if(x.signedUrl)urls[x.path]=x.signedUrl})}
  S.prendas=a.data.map(p=>({id:p.id,tipo:p.tipo,color:p.color,nombre:p.nombre,path:p.foto_path,foto:urls[p.foto_path]||"",fecha:Date.parse(p.created_at),temp:p.temporada||[],oca:p.ocasion||[]}));
  S.looks=b.data.map(l=>({id:l.id,nombre:l.nombre,ids:l.prenda_ids||[],pos:l.pos||{},fecha:Date.parse(l.created_at)}));
+ if(!S.cfgLoaded)await cargarCfg();
  S.loadedAt=Date.now();
 }
 async function subir(blob,ext){
@@ -160,7 +172,7 @@ async function entrar(a){
   else S.msg="Cuenta creada. Revisa tu correo para confirmarla y después pulsa Entrar.";
  }catch(e){S.msg=errTxt(e)}
 }
-async function salir(){try{await sb.auth.signOut()}catch(e){}S.user=null;S.prendas=[];S.looks=[];S.sel.clear();S.cmp=[];S.pos={};S.cur=null;S.bk=false;S.msg="";S.err=""}
+async function salir(){try{await sb.auth.signOut()}catch(e){}S.user=null;S.prendas=[];S.looks=[];S.sel.clear();S.cmp=[];S.pos={};S.cur=null;S.bk=false;S.msg="";S.err="";S.cfg={};S.cfgLoaded=false;S.cfgOpen=false;aplicarCfg()}
 
 function loadImg(file){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error("img"));i.src=URL.createObjectURL(file)})}
 /* Quita el fondo liso: rellena desde los bordes los píxeles parecidos al color del fondo y recorta la prenda */
@@ -225,26 +237,32 @@ function vArmario(){
  <div class="chips"><span class="mu">Ocasión</span>${chip("fo",null,"Todas")}${OCAS.map(t=>chip("fo",t,t)).join("")}</div>
  <div class="chips">${Object.keys(COL).map(c=>`<button class="sw ${S.fc===c?"on":""}" title="${c}" aria-label="${c}" style="background:${COL[c]}" data-a="fc" data-v="${c}"></button>`).join("")}${S.fc?`<span class="mu">${S.fc}</span>`:""}</div>
  ${list.length?`<div class="grid">${list.map(card).join("")}</div>`:`<p class="empty">${S.prendas.length?"No hay prendas con ese filtro.":"Tu armario está vacío. Pulsa «Añadir prenda» y sube tus primeras fotos."}</p>`}`}
-const ZONE={"Chaqueta/Abrigo":{x:50,y:30,w:70,z:4},"Camisa":{x:50,y:28,w:58,z:3},"Camiseta":{x:50,y:28,w:58,z:3},"Jersey":{x:50,y:29,w:62,z:3},"Vestido/Falda":{x:50,y:52,w:56,z:2},"Pantalón":{x:50,y:66,w:42,z:2},"Calzado":{x:50,y:93,w:46,z:1},"Complemento":{x:82,y:48,w:22,z:5}};
-const geo=(p,pos)=>({...ZONE[p.tipo],...(pos[p.id]||{})});
+const ZONE={"Chaqueta/Abrigo":{x:50,y:30,w:72,h:32,z:4},"Camisa":{x:50,y:29,w:60,h:26,z:3},"Camiseta":{x:50,y:29,w:60,h:26,z:3},"Jersey":{x:50,y:29,w:64,h:29,z:3},"Vestido/Falda":{x:50,y:52,w:56,h:44,z:2},"Pantalón":{x:50,y:67,w:44,h:44,z:2},"Calzado":{x:50,y:94,w:50,h:10,z:1}};
+const geo=(p,pos)=>{const z=ZONE[p.tipo]||ZONE.Camiseta,o=pos[p.id]||{},w=o.w!=null?o.w:z.w;return {x:o.x!=null?o.x:z.x,y:o.y!=null?o.y:z.y,w,h:z.h*w/z.w,z:z.z}};
 const MANN=`<svg class="mq" viewBox="0 0 300 600" aria-hidden="true"><g fill="var(--mq)" stroke="var(--mqs)" stroke-width="2"><ellipse cx="150" cy="48" rx="24" ry="30"/><rect x="139" y="74" width="22" height="28" rx="8"/><path d="M92 112Q150 96 208 112L214 150L206 262Q150 282 94 262L86 150Z"/><path d="M92 112L64 128L40 272L58 278L84 160Z"/><path d="M208 112L236 128L260 272L242 278L216 160Z"/><path d="M96 258L148 264L140 548L110 548Z"/><path d="M204 258L152 264L160 548L190 548Z"/><ellipse cx="124" cy="560" rx="24" ry="11"/><ellipse cx="176" cy="560" rx="24" ry="11"/></g></svg>`;
-function stage(ps,pos,live){return `<div class="stage" ${live?'id="stage"':''}>${MANN}${ps.map(p=>{const g=geo(p,pos);return `<img src="${p.foto}" alt="" class="g ${live&&S.cur===p.id?"cur":""}" ${live?`data-id="${p.id}"`:""} style="left:${g.x}%;top:${g.y}%;width:${g.w}%;z-index:${g.z}">`}).join("")}</div>`}
+function stage(ps,pos,live){return `<div class="stage" ${live?'id="stage"':''}>${MANN}${ps.filter(p=>!COMP.includes(p.tipo)).map(p=>{const g=geo(p,pos);return `<img src="${p.foto}" alt="" class="g ${live&&S.cur===p.id?"cur":""}" ${live?`data-id="${p.id}"`:""} style="left:${g.x}%;top:${g.y}%;width:${g.w}%;height:${g.h}%;object-fit:contain;z-index:${g.z}">`}).join("")}</div>`}
+const strip=ps=>{const c=ps.filter(p=>COMP.includes(p.tipo));return c.length?`<div class="th">${c.map(p=>`<img src="${p.foto}" alt="">`).join("")}</div>`:""};
+const slot=(t,ps)=>{const p=ps.find(x=>x.tipo===t);return `<button type="button" class="slot ${p?"on":""}" data-a="slot" data-v="${t}">${p?`<img src="${p.foto}" alt="">`:`<span class="plus">+</span>`}<span class="sl">${t==="Complemento"?"Otros":t}</span></button>`};
 function vProbador(){
  const ps=[...S.sel].map(byId).filter(Boolean).sort((a,b)=>rank(a)-rank(b));
- if(!ps.length)return `<p class="empty">Toca prendas en el Armario para ir montando un look y verlas puestas en el maniquí.</p>`;
- const cur=S.cur&&S.sel.has(S.cur)?byId(S.cur):null;
- return `<div class="pb"><div class="stg">${stage(ps,S.pos,true)}</div><div class="ctl">
+ const cur=S.cur&&S.sel.has(S.cur)?byId(S.cur):null,curB=cur&&!COMP.includes(cur.tipo)?cur:null;
+ const mq=S.cfg.maniqui!=null?S.cfg.maniqui:50;
+ return `<div class="pb"><div class="tryon"><div class="slots l">${SL_L.map(t=>slot(t,ps)).join("")}</div><div class="stg">${stage(ps,S.pos,true)}</div><div class="slots r">${SL_R.map(t=>slot(t,ps)).join("")}</div></div><div class="ctl">
+ ${ps.length?"":`<div class="mu">Toca prendas en el Armario para ir montando el look. Los complementos se eligen en los recuadros de los lados.</div>`}
  <div class="mu">Arrastra una prenda para moverla. Toca una para cambiar su tamaño.</div>
  <div class="plist">${ps.map(p=>`<span class="pc ${S.cur===p.id?"on":""}"><button data-a="cur" data-v="${p.id}" aria-label="Seleccionar"><img src="${p.foto}" alt=""></button><button class="x" data-a="sel" data-v="${p.id}" aria-label="Quitar">✕</button></span>`).join("")}</div>
- ${cur?`<label class="mu" for="sz">Tamaño de «${esc(cur.nombre||cur.tipo)}»</label><input type="range" id="sz" min="15" max="120" value="${Math.round(geo(cur,S.pos).w)}">`:""}
+ ${curB?`<label class="mu" for="sz">Tamaño de «${esc(curB.nombre||curB.tipo)}»</label><input type="range" id="sz" min="15" max="120" value="${Math.round(geo(curB,S.pos).w)}">`:""}
+ <label class="mu" for="mqo">Visibilidad del maniquí: <b id="mqov">${mq}</b>%</label><input type="range" id="mqo" min="0" max="100" step="5" value="${mq}">
  <div class="row"><input type="text" id="lname" placeholder="Nombre del look (ej. Oficina)" maxlength="40" value="${esc(S.lname)}"></div>
  <div class="row"><button class="btn" data-a="savelook">Guardar look</button><button class="btn ghost" data-a="reset">Recolocar</button><button class="btn ghost" data-a="clear">Vaciar</button></div></div></div>`}
-
+function vPick(){
+ const t=S.pickT,L=S.prendas.filter(p=>p.tipo===t),hay=[...S.sel].some(i=>{const p=byId(i);return p&&p.tipo===t});
+ return `<div class="ov" data-a="closem"><div class="dlg"><h3>Elige: ${t==="Complemento"?"otros complementos":t}</h3>${L.length?`<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(90px,1fr))">${L.map(p=>`<div class="card ${S.sel.has(p.id)?"sel":""}" data-a="pickit" data-v="${p.id}"><img src="${p.foto}" alt=""></div>`).join("")}</div>`:`<p class="mu">No tienes prendas de este tipo. Añádelas con «Añadir prenda» eligiendo el tipo «${t}».</p>`}<div class="row">${hay?`<button class="btn ghost" data-a="pickclear">Quitar</button>`:""}<button class="btn ghost" data-a="closem">Cerrar</button></div></div></div>`}
 const items=l=>l.ids.map(byId).filter(Boolean).sort((a,b)=>rank(a)-rank(b));
 function vLooks(){
  if(!S.looks.length)return `<p class="empty">Aún no has guardado ningún look. Monta uno en el Probador y pulsa «Guardar look».</p>`;
  const c=S.cmp.map(id=>S.looks.find(l=>l.id===id)).filter(Boolean);
- const cmp=c.length===2?`<div class="cmp">${c.map(l=>`<div><h3>${esc(l.nombre)}</h3>${stage(items(l),l.pos||{},false)}</div>`).join("")}</div>`:`<p class="mu">Pulsa «Comparar» en dos looks para verlos uno al lado del otro.</p>`;
+ const cmp=c.length===2?`<div class="cmp">${c.map(l=>`<div><h3>${esc(l.nombre)}</h3>${stage(items(l),l.pos||{},false)}${strip(items(l))}</div>`).join("")}</div>`:`<p class="mu">Pulsa «Comparar» en dos looks para verlos uno al lado del otro.</p>`;
  return cmp+`<div class="lk">${S.looks.map(l=>`<div class="lc"><h3>${esc(l.nombre)}</h3><div class="th">${items(l).map(p=>`<img src="${p.foto}" alt="">`).join("")}</div><div class="row"><button class="chip ${S.cmp.includes(l.id)?"on":""}" data-a="cmp" data-v="${l.id}">Comparar</button><button class="chip" data-a="loadlook" data-v="${l.id}">Abrir</button><button class="chip ${S.del==="l"+l.id?"on":""}" data-a="dell" data-v="${l.id}">${S.del==="l"+l.id?"¿Borrar?":"Borrar"}</button></div></div>`).join("")}</div>`}
 
 function vModal(){
@@ -271,8 +289,8 @@ function render(){
  $("#tabs").innerHTML=[["armario","Armario"],["probador","Probador"+(S.sel.size?" ("+S.sel.size+")":"")],["looks","Mis looks"]].map(([k,l])=>`<button class="tab ${S.tab===k?"on":""}" data-a="tab" data-v="${k}">${l}</button>`).join("");
  $("#view").innerHTML=S.tab==="armario"?vArmario():S.tab==="probador"?vProbador():vLooks();
  $("#bar").innerHTML=(S.tab==="armario"&&S.sel.size)?`<button class="btn" data-a="tab" data-v="probador">Ver look (${S.sel.size})</button><button class="btn ghost" data-a="clear">Vaciar</button>`:"";
- $("#modal").innerHTML=S.modal?vModal():"";
- $("#bk").innerHTML=vBk();
+ $("#modal").innerHTML=S.modal?vModal():S.pickT?vPick():"";
+ $("#bk").innerHTML=vCfg()+vBk();
 }
 
 async function guardar(){
@@ -319,6 +337,12 @@ document.addEventListener("click",async e=>{
  else if(a==="pwsave")await cambiarPw()
  else if(a==="pwopen"){S.chpw=true;S.msg="";S.bk=false}
  else if(a==="pwcancel"){S.chpw=false;S.msg=""}
+ else if(a==="cfgopen"){S.cfgOpen=!S.cfgOpen}
+ else if(a==="cfgclose"){S.cfgOpen=false}
+ else if(a==="tema"){const base=temaColores()||DEFC;if(v)S.cfg.tema=v;else delete S.cfg.tema;if(v==="custom"&&!S.cfg.col)S.cfg.col={...base};aplicarCfg();guardarCfg()}
+ else if(a==="slot")S.pickT=v
+ else if(a==="pickit"){const t=byId(id).tipo;[...S.sel].forEach(i=>{const q=byId(i);if(q&&q.tipo===t)S.sel.delete(i)});S.sel.add(id);S.pickT=null}
+ else if(a==="pickclear"){const t=S.pickT;[...S.sel].forEach(i=>{const q=byId(i);if(q&&q.tipo===t)S.sel.delete(i)});S.pickT=null}
  else if(a==="tg"){el.classList.toggle("on");return}
  else if(a==="retocar"){await abrirEd();return}
  else if(a==="tool"){S.ed.tool=v;$("#tb").classList.toggle("on",v==="borrar");const t=$("#tr");if(t)t.classList.toggle("on",v==="restaurar");return}
@@ -333,7 +357,7 @@ document.addEventListener("click",async e=>{
  else if(a==="clear"){S.sel.clear();S.pos={};S.cur=null}
  else if(a==="add"){S.modal={};S.pimg=null;S.edit=null}
  else if(a==="edit"){S.modal={id};S.pimg=null;S.edit=null}
- else if(a==="closem")S.modal=null;
+ else if(a==="closem"){S.modal=null;S.pickT=null}
  else if(a==="del"){if(S.del==="p"+id){S.del=null;S.sel.delete(id);await borrarPrenda(id)}else S.del="p"+id}
  else if(a==="dell"){if(S.del==="l"+id){S.del=null;S.cmp=S.cmp.filter(x=>x!==id);await borrarLook(id)}else S.del="l"+id}
  else if(a==="cmp"){S.cmp.includes(id)?S.cmp=S.cmp.filter(x=>x!==id):S.cmp.push(id);if(S.cmp.length>2)S.cmp.shift()}
@@ -352,7 +376,9 @@ document.addEventListener("input",e=>{
  const id=e.target.id;
  if(id==="ftol")updatePrev();
  else if(id==="lname")S.lname=e.target.value;
- else if(id==="sz"&&S.cur){S.pos[S.cur]={...(S.pos[S.cur]||{}),w:+e.target.value};const g=document.querySelector('#stage .g[data-id="'+S.cur+'"]');if(g)g.style.width=e.target.value+"%"}
+ else if(id==="sz"&&S.cur){const v=+e.target.value,p=byId(S.cur),z=ZONE[p.tipo]||ZONE.Camiseta;S.pos[S.cur]={...(S.pos[S.cur]||{}),w:v};const g=document.querySelector('#stage .g[data-id="'+S.cur+'"]');if(g){g.style.width=v+"%";g.style.height=(z.h*v/z.w)+"%"}}
+ else if(id==="mqo"){S.cfg.maniqui=+e.target.value;$("#mqov").textContent=e.target.value;aplicarCfg();guardarCfg()}
+ else if(id==="c_bg"||id==="c_ac"||id==="c_sec"){S.cfg.col={...(S.cfg.col||{}),[id.slice(2)]:e.target.value};aplicarCfg();guardarCfg()}
 });
 document.addEventListener("pointerdown",e=>{const g=e.target.closest("#stage .g");if(!g)return;e.preventDefault();const id=+g.dataset.id,p=byId(id);if(!p)return;const o=geo(p,S.pos);S.cur=id;drag={g,id,r:$("#stage").getBoundingClientRect(),sx:e.clientX,sy:e.clientY,x:o.x,y:o.y};try{g.setPointerCapture(e.pointerId)}catch(x){}});
 document.addEventListener("pointermove",e=>{if(!drag)return;const x=Math.max(0,Math.min(100,drag.x+(e.clientX-drag.sx)/drag.r.width*100)),y=Math.max(0,Math.min(100,drag.y+(e.clientY-drag.sy)/drag.r.height*100));S.pos[drag.id]={...(S.pos[drag.id]||{}),x,y};drag.g.style.left=x+"%";drag.g.style.top=y+"%"});
@@ -434,6 +460,46 @@ async function aplicar(){
 }
 document.addEventListener("change",async e=>{if(e.target.id==="fimp"){const f=e.target.files[0];if(f)await leerCopia(f)}});
 
+/* ---------- ajustes del usuario (se guardan en Supabase) ---------- */
+const DEFC={bg:"#eceeeb",ac:"#1f5c52",sec:"#ffffff"};
+const TEMAS={arena:{n:"Arena",bg:"#f4ede4",ac:"#9a5b34",sec:"#fffaf3"},oceano:{n:"Océano",bg:"#e8eff7",ac:"#234e8c",sec:"#ffffff"},ciruela:{n:"Ciruela",bg:"#f3eaf1",ac:"#7a2f64",sec:"#ffffff"},oscuro:{n:"Oscuro",bg:"#121819",ac:"#6fc2b0",sec:"#1c2425"}};
+const HEX=/^#[0-9a-fA-F]{6}$/;
+const hx=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+const lum=h=>{const c=hx(h).map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]};
+const mix=(a,b,t)=>{const x=hx(a),y=hx(b);return "#"+x.map((v,i)=>Math.round(v+(y[i]-v)*t).toString(16).padStart(2,"0")).join("")};
+const onc=h=>lum(h)>.4?"#10201c":"#ffffff";
+function temaColores(){const t=S.cfg.tema,c=S.cfg.col;if(t==="custom"&&c&&HEX.test(c.bg)&&HEX.test(c.ac)&&HEX.test(c.sec))return c;return has(TEMAS,t)?TEMAS[t]:null}
+function aplicarCfg(){
+ const r=document.documentElement.style,c=temaColores();
+ r.setProperty("--mqo",String((S.cfg.maniqui!=null?S.cfg.maniqui:50)/100));
+ if(!c){["--bg","--card","--tx","--mu","--ac","--on","--bd","--sec","--sect","--mq","--mqs","color-scheme"].forEach(v=>r.removeProperty(v));return}
+ const dark=lum(c.bg)<.3,tx=dark?"#e8eeeb":"#1d2a2e";
+ r.setProperty("--bg",c.bg);r.setProperty("--card",mix(c.bg,"#ffffff",dark?.08:.7));r.setProperty("--tx",tx);r.setProperty("--mu",mix(tx,c.bg,.45));
+ r.setProperty("--ac",c.ac);r.setProperty("--on",onc(c.ac));r.setProperty("--bd",mix(c.bg,tx,.16));
+ r.setProperty("--sec",c.sec);r.setProperty("--sect",onc(c.sec));r.setProperty("--mq",mix(c.bg,tx,.1));r.setProperty("--mqs",mix(c.bg,tx,.22));
+ r.setProperty("color-scheme",dark?"dark":"light");
+}
+function limpiaCfg(a){
+ const o={};if(!a||typeof a!=="object")return o;
+ if(typeof a.maniqui==="number"&&isFinite(a.maniqui))o.maniqui=Math.max(0,Math.min(100,Math.round(a.maniqui)));
+ if(typeof a.tema==="string"&&(a.tema==="custom"||has(TEMAS,a.tema)))o.tema=a.tema;
+ if(a.col&&typeof a.col==="object"&&["bg","ac","sec"].every(k=>typeof a.col[k]==="string"&&HEX.test(a.col[k])))o.col={bg:a.col.bg,ac:a.col.ac,sec:a.col.sec};
+ return o;
+}
+async function cargarCfg(){
+ try{const r=await sb.from("perfiles").select("ajustes").maybeSingle();S.cfgErr=!!r.error;if(!r.error&&r.data)S.cfg=limpiaCfg(r.data.ajustes)}catch(e){S.cfgErr=true}
+ S.cfgLoaded=true;aplicarCfg();
+}
+let ct;
+function guardarCfg(){clearTimeout(ct);ct=setTimeout(async()=>{if(!S.user)return;try{const r=await sb.from("perfiles").upsert({user_id:S.user.id,ajustes:S.cfg,updated_at:new Date().toISOString()});S.cfgErr=!!r.error}catch(e){S.cfgErr=true}},700)}
+function vCfg(){
+ if(!S.cfgOpen)return "";
+ const c=temaColores()||DEFC;
+ return `<div class="lc bk"><h3>Colores de la página</h3>
+ <div class="chips"><button class="chip ${!S.cfg.tema?"on":""}" data-a="tema" data-v="">Automático</button>${Object.keys(TEMAS).map(k=>`<button class="chip ${S.cfg.tema===k?"on":""}" data-a="tema" data-v="${k}"><i class="dot" style="background:${TEMAS[k].ac}"></i>${TEMAS[k].n}</button>`).join("")}<button class="chip ${S.cfg.tema==="custom"?"on":""}" data-a="tema" data-v="custom">Personalizado</button></div>
+ ${S.cfg.tema==="custom"?`<div class="row" style="gap:16px"><label class="mu">Fondo<br><input type="color" id="c_bg" value="${c.bg}"></label><label class="mu">Botón principal<br><input type="color" id="c_ac" value="${c.ac}"></label><label class="mu">Botón secundario<br><input type="color" id="c_sec" value="${c.sec}"></label></div>`:""}
+ <p class="mu">${S.cfgErr?"Todavía no se pueden guardar tus ajustes en la cuenta: falta ejecutar el SQL 1.2.0 en Supabase.":"Tus ajustes se guardan en tu cuenta y te siguen en cualquier dispositivo."}</p>
+ <div class="row"><button class="btn ghost" data-a="cfgclose">Cerrar</button></div></div>`}
 /* ---------- contraseña ---------- */
 const needPw=()=>!(S.user&&S.user.user_metadata&&S.user.user_metadata.pw_ok);
 function vPw(){
