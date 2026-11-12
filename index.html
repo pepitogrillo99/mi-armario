@@ -27,7 +27,7 @@ button{font:inherit;cursor:pointer}
 .btn.ghost{background:var(--sec,transparent);color:var(--sect,var(--tx));border:1px solid var(--bd)}
 .btn.warn{background:var(--warn);color:#fff}
 .tabs{display:flex;gap:6px;margin-bottom:14px}
-.tab{flex:1;white-space:nowrap;background:var(--sec,var(--card));border:1px solid var(--bd);color:var(--sect,var(--tx));border-radius:10px;padding:9px 8px}
+.tab{flex:1;white-space:nowrap;background:var(--sec,var(--card));border:1px solid var(--bd);color:var(--sect,var(--tx));border-radius:10px;padding:9px 4px;font-size:15px}
 .tab.on{background:var(--ac);color:var(--on);border-color:var(--ac)}
 .chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
 .chip{background:var(--sec,var(--card));border:1px solid var(--bd);color:var(--sect,var(--tx));border-radius:999px;padding:5px 12px;font-size:14px}
@@ -104,6 +104,7 @@ input[type=text],input[type=password],select{width:100%;padding:10px;border-radi
 .slot .plus{font-size:26px;line-height:60px;height:60px}
 .slot .sl{font-size:11px;margin-top:3px}
 @media (min-width:760px){.tryon{flex-direction:row;align-items:flex-start;flex:0 0 auto;max-width:none}.tryon .stg{order:2;width:340px}.slots{flex-direction:column;flex-wrap:nowrap;justify-content:flex-start}.slots.l{order:1}.slots.r{order:3}}
+.lc .chk2{display:flex;gap:8px;align-items:center;margin:8px 0;color:var(--tx)}
 @media (max-width:520px){.cmp{gap:8px}}
 </style>
 </head>
@@ -114,7 +115,7 @@ input[type=text],input[type=password],select{width:100%;padding:10px;border-radi
 <div id="bk"></div>
 <div class="tabs" id="tabs"></div>
 <div id="view"></div>
-<p class="mu foot">Tus prendas se guardan en tu cuenta. · Mi armario v2.3.0</p>
+<p class="mu foot">Tus prendas se guardan en tu cuenta. · Mi armario v2.4.0</p>
 </main>
 <div id="bar"></div>
 <div id="modal"></div>
@@ -125,7 +126,7 @@ const TIPOS=["Chaqueta/Abrigo","Camisa","Camiseta","Jersey","Vestido/Falda","Pan
 const SL_L=["Gorra","Pañuelo","Bolso"],SL_R=["Cinturón","Reloj","Complemento"],COMP=[...SL_L,...SL_R];
 const TEMPS=["Primavera","Verano","Otoño","Invierno","Todo el año"],OCAS=["Diario","Trabajo","Elegante","Deporte","Fiesta","Casa"];
 const COL={Negro:"#1a1a1a",Blanco:"#ffffff",Gris:"#9a9a9a",Beige:"#d8c3a5",Marrón:"#7b4f2e",Azul:"#2f5fa7",Verde:"#3f7d4e",Rojo:"#c0392b",Rosa:"#e8a0b4",Amarillo:"#e8c547",Naranja:"#e07b39",Morado:"#7d4fa0",Multicolor:"conic-gradient(#c0392b,#e8c547,#3f7d4e,#2f5fa7,#7d4fa0,#c0392b)"};
-const S={tab:"armario",ft:null,fc:null,sel:new Set(),cmp:[],del:null,prendas:[],looks:[],modal:null,last:{tipo:TIPOS[2],color:"Negro",rm:true,tol:45,soft:true},warn:false,pos:{},cur:null,lname:"",pimg:null,bk:false,imp:null,rep:false,msg:"",user:null,err:"",fs:null,fo:null,edit:null,chpw:false,ed:null,cfg:{},cfgErr:false,cfgOpen:false,cfgLoaded:false,pickT:null};
+const S={tab:"armario",ft:null,fc:null,sel:new Set(),cmp:[],del:null,prendas:[],looks:[],modal:null,last:{tipo:TIPOS[2],color:"Negro",rm:true,tol:45,soft:true},warn:false,pos:{},cur:null,lname:"",pimg:null,bk:false,imp:null,rep:false,msg:"",user:null,err:"",fs:null,fo:null,edit:null,chpw:false,ed:null,cfg:{},cfgErr:false,cfgOpen:false,cfgLoaded:false,pickT:null,rnd:{temp:null,oca:null,cols:[],arr:{Camiseta:1,Camisa:1,Jersey:1},aba:{"Pantalón":1,"Vestido/Falda":1},add:{Calzado:1},untag:true,evita:true,res:null,lock:[],msg:"",nota:"",name:""}};
 const $=s=>document.querySelector(s);
 const esc=t=>String(t||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const rank=p=>TIPOS.indexOf(p.tipo);
@@ -286,8 +287,8 @@ function render(){
  if(S.chpw||needPw()){renderPw();return}
  $("#hdr").style.display="";
  $("#warn").innerHTML=S.err?`<div class="note">${esc(S.err)}</div>`:"";
- $("#tabs").innerHTML=[["armario","Armario"],["probador","Probador"+(S.sel.size?" ("+S.sel.size+")":"")],["looks","Mis looks"]].map(([k,l])=>`<button class="tab ${S.tab===k?"on":""}" data-a="tab" data-v="${k}">${l}</button>`).join("");
- $("#view").innerHTML=S.tab==="armario"?vArmario():S.tab==="probador"?vProbador():vLooks();
+ $("#tabs").innerHTML=[["armario","Armario"],["probador","Probador"+(S.sel.size?" ("+S.sel.size+")":"")],["looks","Mis looks"],["alea","Aleatorio"]].map(([k,l])=>`<button class="tab ${S.tab===k?"on":""}" data-a="tab" data-v="${k}">${l}</button>`).join("");
+ $("#view").innerHTML=S.tab==="armario"?vArmario():S.tab==="probador"?vProbador():S.tab==="alea"?vAlea():vLooks();
  $("#bar").innerHTML=(S.tab==="armario"&&S.sel.size)?`<button class="btn" data-a="tab" data-v="probador">Ver look (${S.sel.size})</button><button class="btn ghost" data-a="clear">Vaciar</button>`:"";
  $("#modal").innerHTML=S.modal?vModal():S.pickT?vPick():"";
  $("#bk").innerHTML=vCfg()+vBk();
@@ -337,6 +338,13 @@ document.addEventListener("click",async e=>{
  else if(a==="pwsave")await cambiarPw()
  else if(a==="pwopen"){S.chpw=true;S.msg="";S.bk=false}
  else if(a==="pwcancel"){S.chpw=false;S.msg=""}
+ else if(a==="gen")generar()
+ else if(a==="rt"){const g=el.dataset.g;S.rnd[g][v]=!S.rnd[g][v]}
+ else if(a==="rs")S.rnd[el.dataset.g]=v||null
+ else if(a==="rc"){const c=S.rnd.cols;c.includes(v)?c.splice(c.indexOf(v),1):c.push(v)}
+ else if(a==="rlock"){const l=S.rnd.lock;l.includes(id)?l.splice(l.indexOf(id),1):l.push(id)}
+ else if(a==="ropen"){S.sel=new Set(S.rnd.res);S.pos={};S.cur=null;S.tab="probador"}
+ else if(a==="rsave"){const n=S.rnd.name.trim()||"Aleatorio "+(S.looks.length+1);await guardarLook(n,[...S.rnd.res],{});S.rnd.name="";S.tab="looks"}
  else if(a==="cfgopen"){S.cfgOpen=!S.cfgOpen}
  else if(a==="cfgclose"){S.cfgOpen=false}
  else if(a==="tema"){const base=temaColores()||DEFC;if(v)S.cfg.tema=v;else delete S.cfg.tema;if(v==="custom"&&!S.cfg.col)S.cfg.col={...base};aplicarCfg();guardarCfg()}
@@ -376,6 +384,7 @@ document.addEventListener("input",e=>{
  const id=e.target.id;
  if(id==="ftol")updatePrev();
  else if(id==="lname")S.lname=e.target.value;
+ else if(id==="rname")S.rnd.name=e.target.value;
  else if(id==="sz"&&S.cur){const v=+e.target.value,p=byId(S.cur),z=ZONE[p.tipo]||ZONE.Camiseta;S.pos[S.cur]={...(S.pos[S.cur]||{}),w:v};const g=document.querySelector('#stage .g[data-id="'+S.cur+'"]');if(g){g.style.width=v+"%";g.style.height=(z.h*v/z.w)+"%"}}
  else if(id==="mqo"){S.cfg.maniqui=+e.target.value;$("#mqov").textContent=e.target.value;aplicarCfg();guardarCfg()}
  else if(id==="c_bg"||id==="c_ac"||id==="c_sec"){S.cfg.col={...(S.cfg.col||{}),[id.slice(2)]:e.target.value};aplicarCfg();guardarCfg()}
@@ -459,6 +468,88 @@ async function aplicar(){
  S.imp=null;
 }
 document.addEventListener("change",async e=>{if(e.target.id==="fimp"){const f=e.target.files[0];if(f)await leerCopia(f)}});
+
+/* ---------- lógica del look aleatorio ---------- */
+const ARR=["Camiseta","Camisa","Jersey"],ABA=["Pantalón","Vestido/Falda"],ADD=["Calzado","Chaqueta/Abrigo","Gorra","Pañuelo","Bolso","Cinturón","Reloj"];
+const NEUT=["Negro","Blanco","Gris","Beige"];
+const fuerte=c=>!NEUT.includes(c)&&c!=="Marrón";
+function cscore(a,b){
+ if(NEUT.includes(a)||NEUT.includes(b))return 3;
+ if(a==="Marrón"||b==="Marrón")return 1.6;
+ if(a==="Multicolor"||b==="Multicolor")return .25;
+ if(a===b)return 1.5;
+ return .4;
+}
+function rndPick(pool,chosen,evita){
+ let ws=pool.map(p=>{
+  if(!evita||!chosen.length)return 1;
+  const f=new Set(chosen.map(q=>q.color).filter(fuerte));
+  if(fuerte(p.color))f.add(p.color);
+  if(f.size>2)return 0;
+  const m=chosen.reduce((a,q)=>a+cscore(p.color,q.color),0)/chosen.length;
+  return m*m;
+ });
+ let tot=ws.reduce((a,b)=>a+b,0);
+ if(tot<=0){ws=pool.map(()=>1);tot=pool.length}
+ let r=Math.random()*tot;
+ for(let i=0;i<pool.length;i++){r-=ws[i];if(r<=0)return pool[i]}
+ return pool[pool.length-1];
+}
+function generar(){
+ const R=S.rnd,lock=R.lock.map(byId).filter(Boolean);
+ const ok=p=>{
+  if(R.temp){if(p.temp.length?!(p.temp.includes(R.temp)||p.temp.includes("Todo el año")):!R.untag)return false}
+  if(R.oca){if(p.oca.length?!p.oca.includes(R.oca):!R.untag)return false}
+  if(R.cols.length&&!R.cols.includes(p.color))return false;
+  return true;
+ };
+ const pool=t=>S.prendas.filter(p=>p.tipo===t&&ok(p)),lockedBy=t=>lock.find(p=>p.tipo===t),chosen=[];
+ const take=tipos=>{
+  const L=tipos.map(lockedBy).find(Boolean);
+  if(L){chosen.push(L);return L}
+  const cand=tipos.flatMap(pool);
+  if(!cand.length)return null;
+  const p=rndPick(cand,chosen,R.evita);chosen.push(p);return p;
+ };
+ const arr=ARR.filter(t=>R.arr[t]),aba=ABA.filter(t=>R.aba[t]);
+ const lDress=lockedBy("Vestido/Falda"),lTop=ARR.map(lockedBy).find(Boolean),lPant=lockedBy("Pantalón");
+ const canDress=aba.includes("Vestido/Falda")&&(lDress||pool("Vestido/Falda").length>0);
+ const canSet=aba.includes("Pantalón")&&(arr.length||lTop)&&(lPant||pool("Pantalón").length>0)&&(lTop||arr.some(t=>pool(t).length>0));
+ let modo=null;
+ if(lDress)modo="v";else if(lTop||lPant)modo="c";else if(canDress&&canSet)modo=Math.random()<.3?"v":"c";else if(canDress)modo="v";else if(canSet)modo="c";
+ const fallo="No hay prendas suficientes con esos filtros. Prueba a quitar alguno, o etiqueta más prendas con temporada y ocasión.";
+ if(!modo){R.msg=fallo;return}
+ if(modo==="v"){take(["Vestido/Falda"])}
+ else if(!take(lTop?ARR:arr)||!take(["Pantalón"])){R.msg=fallo;return}
+ ADD.forEach(t=>{if(R.add[t]||lockedBy(t))take([t])});
+ R.res=chosen.map(p=>p.id);
+ R.lock=R.lock.filter(id=>R.res.includes(id));
+ const falt=ADD.filter(t=>R.add[t]&&!chosen.some(p=>p.tipo===t));
+ R.nota=falt.length?"No he encontrado con esos filtros: "+falt.join(", ")+".":"";
+ R.msg="";
+}
+
+/* ---------- look aleatorio ---------- */
+function vAlea(){
+ const R=S.rnd,ps=(R.res||[]).map(byId).filter(Boolean).sort((a,b)=>rank(a)-rank(b));
+ const chips=(g,list)=>list.map(t=>`<button class="chip ${R[g][t]?"on":""}" data-a="rt" data-g="${g}" data-v="${t}">${t}</button>`).join("");
+ const sel=(g,v,l)=>`<button class="chip ${R[g]===v?"on":""}" data-a="rs" data-g="${g}" data-v="${v||""}">${l}</button>`;
+ const res=ps.length?`<div class="pb"><div class="stg">${stage(ps,{},false)}${strip(ps)}</div><div class="ctl">
+  ${ps.map(p=>`<div class="row" style="align-items:center;justify-content:flex-start;margin:0;gap:10px"><img src="${p.foto}" alt="" style="width:44px;height:56px;object-fit:contain;background:#fff;border-radius:6px;border:1px solid var(--bd)"><span style="flex:1">${esc(p.nombre||p.tipo)}<br><span class="mu">${p.tipo} · ${p.color}</span></span><button class="chip ${R.lock.includes(p.id)?"on":""}" data-a="rlock" data-v="${p.id}">${R.lock.includes(p.id)?"Fijada":"Fijar"}</button></div>`).join("")}
+  ${R.nota?`<p class="mu">${esc(R.nota)}</p>`:""}
+  <div class="row"><input type="text" id="rname" placeholder="Nombre del look" maxlength="40" value="${esc(R.name)}"></div>
+  <div class="row"><button class="btn" data-a="rsave">Guardar look</button><button class="btn ghost" data-a="ropen">Abrir en el Probador</button></div></div></div>`:"";
+ return `<div class="lc" style="margin-bottom:14px"><h3>Look aleatorio</h3>
+ <div class="mu">Prenda de arriba</div><div class="chips">${chips("arr",ARR)}</div>
+ <div class="mu">Parte de abajo</div><div class="chips">${chips("aba",ABA)}</div>
+ <div class="mu">Añadir (si tienes)</div><div class="chips">${chips("add",ADD)}</div>
+ <div class="mu">Temporada</div><div class="chips">${sel("temp",null,"Cualquiera")}${TEMPS.slice(0,4).map(t=>sel("temp",t,t)).join("")}</div>
+ <div class="mu">Ocasión</div><div class="chips">${sel("oca",null,"Cualquiera")}${OCAS.map(t=>sel("oca",t,t)).join("")}</div>
+ <div class="mu">Solo estos colores (sin marcar = todos)</div><div class="chips">${Object.keys(COL).map(c=>`<button class="sw ${R.cols.includes(c)?"on":""}" title="${c}" aria-label="${c}" style="background:${COL[c]}" data-a="rc" data-v="${c}"></button>`).join("")}</div>
+ <label class="chk2"><input type="checkbox" id="runtag" ${R.untag?"checked":""}> Incluir prendas sin etiquetar</label>
+ <label class="chk2"><input type="checkbox" id="revita" ${R.evita?"checked":""}> Evitar combinaciones de colores que chocan</label>
+ <div class="row" style="justify-content:flex-start"><button class="btn" data-a="gen">${R.res?"Otro look":"Generar look"}</button></div></div>
+ ${R.msg?`<div class="note">${esc(R.msg)}</div>`:""}${res}`}
 
 /* ---------- ajustes del usuario (se guardan en Supabase) ---------- */
 const DEFC={bg:"#eceeeb",ac:"#1f5c52",sec:"#ffffff"};
@@ -554,7 +645,7 @@ document.addEventListener("pointerdown",e=>{if(!S.ed||e.target.id!=="edc")return
 document.addEventListener("pointermove",e=>{if(!S.ed||!S.ed.last)return;const p=edPos(e),l=S.ed.last;edLine(l[0],l[1],p[0],p[1]);S.ed.last=p;edDraw()});
 document.addEventListener("pointerup",()=>{if(S.ed)S.ed.last=null});
 document.addEventListener("input",e=>{if(e.target.id==="bsz"&&S.ed)S.ed.r=+e.target.value});
-document.addEventListener("change",e=>{if(e.target.id==="fsh")updatePrev()});
+document.addEventListener("change",e=>{if(e.target.id==="fsh")updatePrev();if(e.target.id==="runtag")S.rnd.untag=e.target.checked;if(e.target.id==="revita")S.rnd.evita=e.target.checked});
 document.addEventListener("keydown",e=>{if(e.key!=="Enter")return;const id=e.target.id,b=(id==="lpw"||id==="lem")?document.querySelector('[data-a="login"]'):(id==="pw1"||id==="pw2")?document.querySelector('[data-a="pwsave"]'):null;if(b)b.click()});
 
 document.addEventListener("visibilitychange",async()=>{if(document.visibilityState==="visible"&&S.user&&!S.modal&&Date.now()-S.loadedAt>50*60*1000){await run(load);render()}});
